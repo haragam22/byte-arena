@@ -1,0 +1,6 @@
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# Backend
+BACKEND_BASE_URL=http://127.0.0.1:8000
