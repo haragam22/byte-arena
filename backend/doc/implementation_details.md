@@ -18,17 +18,18 @@ This document summarizes the changes made to integrate the Round 1 qualification
 - **Change:** Updated to include a full integration test flow.
 - **Flow:**
     1. Initializes `test.db` (SQLite).
-    2. Populates the DB with a test contest and 35 dummy participants with randomized scores and submission times.
+    2. Populates the DB with a test contest, 35 dummy participants, a test problem, and a matchmaking round.
     3. Executes the `scoring.get_qualified_users` logic to select the top 32 players.
-    4. Iterates through the winners and adds them to the **real Redis Matchmaking Queue**.
-    5. Verifies the Redis queue length at the end.
+    4. Iterates through the winners and adds them to the **Matchmaking Queue**.
+    5. Triggers `matchmaking.try_match()` to verify that matches can be created from the queue.
+    6. Uses a **Redis Mock** if a local Redis service is unavailable to ensure logic verification.
 
 ---
 
 ### **Verification Status**
-- **Database Model:** Verified (SQLite schema updated).
+- **Database Model:** Verified (SQLite schema updated for `ContestParticipant`, `Problem`, and `Round`).
 - **Service Integration:** Verified (Battle API now correctly uses Matchmaking service).
-- **End-to-End Logic:** Tested via `test.py` (simulates ranking -> qualification -> queuing).
+- **End-to-End Logic:** Tested via `test.py` (simulates ranking -> qualification -> queuing -> matching).
 
-> [!NOTE]
-> Ensure Redis is running on `localhost:6379` before running `test.py` for full integration verification.
+> [!TIP]
+> `test.py` is now a comprehensive integration test for the entire Battle Royale phase logic.
