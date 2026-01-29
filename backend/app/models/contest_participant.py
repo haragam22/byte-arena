@@ -12,7 +12,6 @@ class ContestParticipant(Base):
     join_time: Mapped[datetime] = mapped_column(default=datetime.utcnow)
     current_round: Mapped[int] = mapped_column(Integer)
     eliminated: Mapped[bool] = mapped_column(Boolean, default=False)
-    score: Mapped[int] = mapped_column(Integer, default=0)
     
     score: Mapped[float] = mapped_column(Float, default=0.0) 
     last_submission_time: Mapped[datetime] = mapped_column(nullable=True)

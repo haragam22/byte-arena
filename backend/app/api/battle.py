@@ -1,13 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import AsyncSessionLocal # Use the session factory we fixed earlier
-from app.services import scoring 
+from app.services import scoring, matchmaking 
 
 
-async def stub_join_queue(user_id: int) -> bool:
-    
-    print(f"[STUB] User {user_id} added to matchmaking queue.")
-    return True
+
 
 
 router = APIRouter()
@@ -33,7 +30,7 @@ async def finalize_round_1(
     success_count = 0
     for user_id in qualified_ids:
         
-        added = await stub_join_queue(user_id) 
+        added = await matchmaking.join_queue(user_id) 
         if added:
             success_count += 1
 

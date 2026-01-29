@@ -79,6 +79,41 @@ async def create_test_scenario():
         await db.commit()
         print("✅ Test Data Ready!")
         print(f"👉 Contest ID: {contest_id}")
+        return contest_id
+
+async def test_round_1_finalization(contest_id: int):
+    from app.services import scoring, matchmaking
+    from app.db.session import AsyncSessionLocal
+    
+    print(f"\n🚀 Testing Round 1 Finalization for Contest {contest_id}...")
+    
+    async with AsyncSessionLocal() as db:
+        qualified_ids = await scoring.get_qualified_users(db, contest_id=contest_id, limit=32)
+        print(f"📊 Found {len(qualified_ids)} qualified users.")
+        
+        if not qualified_ids:
+            print("❌ No qualified users found!")
+            return
+
+        success_count = 0
+        for user_id in qualified_ids:
+            added = await matchmaking.join_queue(user_id)
+            if added:
+                success_count += 1
+        
+        print(f"✅ Successfully queued {success_count} users to matchmaking.")
+        
+        # Verify in Redis (briefly)
+        try:
+            from app.db.redis import redis_client
+            queue_len = await redis_client.llen("matchmaking:queue")
+            print(f"🔗 Redis Queue Length: {queue_len}")
+        except Exception as e:
+            print(f"⚠️ Could not check Redis (is it running?): {e}")
+
+async def main():
+    contest_id = await create_test_scenario()
+    await test_round_1_finalization(contest_id)
 
 if __name__ == "__main__":
     asyncio.run(create_test_scenario())
